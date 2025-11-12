@@ -15,6 +15,7 @@ export const handle_user_signup = async (req: Request, res: Response) => {
     if(!name || !email || !password){
         res.json({message: "Missing required fields."})
     }
+
     const user = await UserModel.findOne({email: email})
 
     if(user){
@@ -44,7 +45,12 @@ export const handle_user_signup = async (req: Request, res: Response) => {
             }
         )
 
-        res.json({message: "Account created!", token: token})
+        res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: 2 * 60 * 60 * 1000 // 2 hours
+        });
+
+        res.redirect("/forms");
     
     }catch(err: any){
         res.send(`An error occured: ${err.message}`)
@@ -55,21 +61,31 @@ export const handle_user_login = async (req: Request, res: Response) => {
     const {email, password} = req.body
 
     if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
+        return res.render("account/login", {
+            title: "Login",
+            error: "Email and password are required",
+        });
     }
 
     try{
         //get the user document
         const user = await UserModel.findOne({email: email})
 
+
         if (!user) {
-            return res.status(400).json({ message: "User does not exist." });
+            return res.render("account/login", {
+                title: "Login",
+                error: "User does not exist",
+            });
         }
 
-        const isPasswordValid = bcrypt.compare(password, user.password as string)
+        const isPasswordValid = await bcrypt.compare(password, user.password as string)
 
         if (!isPasswordValid) {
-            return res.status(401).json({ message: "Invalid password." });
+            return res.render("account/login", {
+                title: "Login",
+                error: "Invalid password",
+            });
         }
 
         const token = jwt.sign(
@@ -85,18 +101,18 @@ export const handle_user_login = async (req: Request, res: Response) => {
             }
         )
 
-        res.status(200).json({
-            message: "Login successful",
-            token,
-            user: {
-            id: user._id,
-            username: user.name,
-            email: user.email,
-            role: user.role,
-            },
+        res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: 2 * 60 * 60 * 1000 // 2 hours
         });
+
+        res.redirect("/forms");
+
     }catch(error: any){
         console.error("An error occurred: ",error.message)
-        res.status(500).send(`An error occured: ${error.message}`)
+        return res.render("account/login", {
+            title: "Login",
+            error: "Something went wrong. Please try again.",
+        });
     }
 }
