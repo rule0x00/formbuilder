@@ -14,7 +14,6 @@ cd backend_formbuilder
 
 Build Docker images
 ```
-Copy code
 docker compose build
 ```
 
