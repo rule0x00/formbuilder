@@ -1,6 +1,7 @@
 // src/controllers/field.controller.ts
 import { Request, Response } from "express";
-import FormModel, { fieldInterface } from "../models/form";
+import FormModel from "../models/form";
+import  { fieldInterface } from "../models/fields"
 
 
 // Add a new field to a FormModel
