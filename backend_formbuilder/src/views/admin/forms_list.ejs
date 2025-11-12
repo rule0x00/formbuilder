@@ -1,0 +1,16 @@
+<h2>📋 All Forms</h2>
+<a href="/admin/forms/new" class="btn btn-primary">+ Create Form</a>
+
+<% if (message) { %>
+  <p style="color: green;"><%= message %></p>
+<% } %>
+
+<ul>
+  <% forms.forEach(form => { %>
+    <li>
+      <strong><%= form.title %></strong> – <%= form.description %>
+      <a href="/admin/forms/<%= form._id %>/edit">✏️ Edit</a> |
+      <a href="/admin/forms/<%= form._id %>/submissions">📄 View Submissions</a>
+    </li>
+  <% }) %>
+</ul>

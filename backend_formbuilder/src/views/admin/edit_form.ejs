@@ -1,0 +1,145 @@
+<h2>Edit Form: <%= form.title %></h2>
+
+<form id="editForm" action="/admin/forms/<%= form._id %>?_method=PUT" method="POST">
+  <div>
+    <label>Title</label>
+    <input type="text" name="title" value="<%= form.title %>" required />
+  </div>
+
+  <div>
+    <label>Description</label>
+    <textarea name="description"><%= form.description || '' %></textarea>
+  </div>
+
+  <h3>Fields</h3>
+  <div id="fieldsContainer">
+    <% (fields || []).forEach(function(field, idx) { %>
+      <div class="field-block" data-index="<%= idx %>">
+        <hr/>
+        <label>Label</label>
+        <input type="text" name="fields[<%= idx %>][label]" value="<%= field.label %>" required />
+
+        <label>Name (unique)</label>
+        <input type="text" name="fields[<%= idx %>][name]" value="<%= field.name %>" required />
+
+        <label>Type</label>
+        <select name="fields[<%= idx %>][type]" class="field-type">
+          <option value="text" <%= field.type === 'text' ? 'selected' : '' %>>Text</option>
+          <option value="textarea" <%= field.type === 'textarea' ? 'selected' : '' %>>Textarea</option>
+          <option value="number" <%= field.type === 'number' ? 'selected' : '' %>>Number</option>
+          <option value="email" <%= field.type === 'email' ? 'selected' : '' %>>Email</option>
+          <option value="date" <%= field.type === 'date' ? 'selected' : '' %>>Date</option>
+          <option value="checkbox" <%= field.type === 'checkbox' ? 'selected' : '' %>>Checkbox</option>
+          <option value="radio" <%= field.type === 'radio' ? 'selected' : '' %>>Radio</option>
+          <option value="select" <%= field.type === 'select' ? 'selected' : '' %>>Select</option>
+          <option value="file" <%= field.type === 'file' ? 'selected' : '' %>>File</option>
+        </select>
+
+        <label>Options (comma separated — for select/radio/checkbox)</label>
+        <input type="text" name="fields[<%= idx %>][options]" value="<%= (field.options || []).join(', ') %>" />
+
+        <label>
+          <input type="checkbox" name="fields[<%= idx %>][required]" <%= field.required ? 'checked' : '' %> />
+          Required
+        </label>
+
+        <button type="button" class="removeFieldBtn">Remove</button>
+      </div>
+    <% }) %>
+  </div>
+
+  <button type="button" id="addFieldBtn">+ Add Field</button>
+  <br/><br/>
+  <button type="submit" class="btn-primary">Save changes</button>
+</form>
+
+<script>
+  const fieldsContainer = document.getElementById('fieldsContainer');
+  const addFieldBtn = document.getElementById('addFieldBtn');
+
+  function createFieldBlock(index, data = {}) {
+    const div = document.createElement('div');
+    div.className = 'field-block';
+    div.dataset.index = index;
+
+    const labelVal = data.label || '';
+    const nameVal = data.name || '';
+    const typeVal = data.type || 'text';
+    const optionsVal = Array.isArray(data.options) ? data.options.join(', ') : (data.options || '');
+    const requiredChecked = data.required ? 'checked' : '';
+
+    div.innerHTML = `
+      <hr/>
+      <label>Label</label>
+      <input type="text" name="fields[${index}][label]" value="${escapeHtml(labelVal)}" required />
+
+      <label>Name (unique)</label>
+      <input type="text" name="fields[${index}][name]" value="${escapeHtml(nameVal)}" required />
+
+      <label>Type</label>
+      <select name="fields[${index}][type]" class="field-type">
+        <option value="text" ${typeVal === 'text' ? 'selected' : ''}>Text</option>
+        <option value="textarea" ${typeVal === 'textarea' ? 'selected' : ''}>Textarea</option>
+        <option value="number" ${typeVal === 'number' ? 'selected' : ''}>Number</option>
+        <option value="email" ${typeVal === 'email' ? 'selected' : ''}>Email</option>
+        <option value="date" ${typeVal === 'date' ? 'selected' : ''}>Date</option>
+        <option value="checkbox" ${typeVal === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+        <option value="radio" ${typeVal === 'radio' ? 'selected' : ''}>Radio</option>
+        <option value="select" ${typeVal === 'select' ? 'selected' : ''}>Select</option>
+        <option value="file" ${typeVal === 'file' ? 'selected' : ''}>File</option>
+      </select>
+
+      <label>Options (comma separated — for select/radio/checkbox)</label>
+      <input type="text" name="fields[${index}][options]" value="${escapeHtml(optionsVal)}" />
+
+      <label><input type="checkbox" name="fields[${index}][required]" ${requiredChecked} /> Required</label>
+
+      <button type="button" class="removeFieldBtn">Remove</button>
+    `;
+
+    // attach remove handler
+    div.querySelector('.removeFieldBtn').addEventListener('click', () => {
+      div.remove();
+      reindexFields();
+    });
+
+    return div;
+  }
+
+  function reindexFields() {
+    const blocks = Array.from(fieldsContainer.querySelectorAll('.field-block'));
+    blocks.forEach((block, i) => {
+      block.dataset.index = i;
+      Array.from(block.querySelectorAll('input, select, textarea')).forEach((el) => {
+        // rename inputs to use new index
+        el.name = el.name.replace(/fields\[\d+\]/, `fields[${i}]`);
+      });
+    });
+  }
+
+  addFieldBtn.addEventListener('click', () => {
+    const idx = fieldsContainer.children.length;
+    const newBlock = createFieldBlock(idx, {});
+    fieldsContainer.appendChild(newBlock);
+  });
+
+  // helper to escape values inserted into HTML attributes
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // ensure remove buttons for server-rendered blocks are wired
+  document.querySelectorAll('.field-block .removeFieldBtn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.target.closest('.field-block').remove();
+      reindexFields();
+    });
+  });
+</script>
+
+<style>
+  .field-block { padding: 10px; border-radius: 6px; margin-bottom: 8px; background:#f8f8f8; }
+  label { display:block; margin-top:6px; font-weight:600; }
+  input, textarea, select { width:100%; padding:6px; margin-top:4px; }
+  .btn-primary { background:#007bff; color:white; padding:8px 12px; border:none; border-radius:6px; }
+</style>

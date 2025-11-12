@@ -1,0 +1,81 @@
+<h2><%= form.title %></h2>
+<p><%= form.description %></p>
+
+<% if (message === null) { %>
+  <!-- 🚫 Just show the message, don't render form -->
+  <div class="alert alert-warning">
+    <%= message %>
+  </div>
+<% } else { %>
+  <!-- ✅ Show form only if no message -->
+  <form method="POST" action="/forms/<%= form._id %>/submit" enctype="multipart/form-data">
+    <% fields.forEach(field => { %>
+      <div class="form-group">
+        <label><%= field.label %> <% if (field.required) { %>*<% } %></label>
+
+        <% if (field.type === "textarea") { %>
+          <textarea
+            name="<%= field.name %>"
+            <%= field.required ? "required" : "" %>
+            <% if (field.validation?.min) { %> minlength="<%= field.validation.min %>" <% } %>
+            <% if (field.validation?.max) { %> maxlength="<%= field.validation.max %>" <% } %>
+          ></textarea>
+
+        <% } else if (field.type === "select") { %>
+          <select name="<%= field.name %>" <%= field.required ? "required" : "" %>>
+            <% field.options?.forEach(opt => { %>
+              <option value="<%= opt %>"><%= opt %></option>
+            <% }) %>
+          </select>
+
+        <% } else if (field.type === "radio" || field.type === "checkbox") { %>
+          <% field.options?.forEach(opt => { %>
+            <label>
+              <input
+                type="<%= field.type %>"
+                name="<%= field.name %><%= field.type === 'checkbox' ? '[]' : '' %>"
+                value="<%= opt %>"
+                <%= field.required ? "required" : "" %>
+              />
+              <%= opt %>
+            </label>
+          <% }) %>
+
+        <% } else if (field.type === "file") { %>
+          <input
+            type="file"
+            name="<%= field.name %>"
+            <%= field.required ? "required" : "" %>
+          />
+
+        <% } else { %>
+          <input
+            type="<%= field.type %>"
+            name="<%= field.name %>"
+            <%= field.required ? "required" : "" %>
+            <% if (field.validation?.min !== undefined) { %> min="<%= field.validation.min %>" <% } %>
+            <% if (field.validation?.max !== undefined) { %> max="<%= field.validation.max %>" <% } %>
+            <% if (field.validation?.regex) { %> pattern="<%= field.validation.regex %>" <% } %>
+          />
+        <% } %>
+
+        <% if (errors && errors[field.name]) { %>
+          <p class="error"><%= errors[field.name] %></p>
+        <% } %>
+      </div>
+    <% }) %>
+
+    <button type="submit">Submit Form</button>
+  </form>
+<% } %>
+
+<style>
+  .alert-warning {
+    background: #fff3cd;
+    color: #856404;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
+  .form-group { margin-bottom: 15px; }
+</style>

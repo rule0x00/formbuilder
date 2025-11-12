@@ -1,0 +1,30 @@
+<h2>📋 Available Forms</h2>
+
+<% if (data.length === 0) { %>
+  <p>No forms available right now.</p>
+<% } else { %>
+  <ul class="form-list">
+    <% data.forEach(form => { %>
+      <li>
+        <h3><%= form.title %></h3>
+        <p><%= form.description %></p>
+
+        <% if (user && user.role === "AdminUser") { %>
+          <!-- Admin actions -->
+          <a href="/admin/forms/<%= form._id %>/submissions" class="btn">View All Submissions</a>
+          <a href="/admin/forms/<%= form._id %>/edit" class="btn btn-secondary">Edit Form</a>
+          <form action="/admin/forms/<%= form._id %>?_method=DELETE" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this form?')">
+              Delete Form
+            </button>
+          </form>
+
+        <% } else { %>
+          <!-- Normal user actions -->
+          <a href="/forms/<%= form._id %>/fill" class="btn">Fill Form</a>
+          <a href="/forms/<%= form._id %>/mine" class="btn btn-secondary">View My Submission</a>
+        <% } %>
+      </li>
+    <% }) %>
+  </ul>
+<% } %>

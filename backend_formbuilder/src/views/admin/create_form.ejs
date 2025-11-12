@@ -1,0 +1,141 @@
+<h2>🧩 Create a New Form</h2>
+
+<form id="createForm" method="POST" action="/admin/forms/new">
+  <div class="form-section">
+    <label for="title">Form Title</label>
+    <input type="text" id="title" name="title" placeholder="Enter form title" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" placeholder="Brief description"></textarea>
+  </div>
+
+  <h3>Form Fields</h3>
+  <div id="fieldsContainer"></div>
+
+  <button type="button" id="addFieldBtn" class="btn">➕ Add Field</button>
+  <br><br>
+
+  <button type="submit" class="btn-primary">✅ Create Form</button>
+</form>
+
+<script>
+  const fieldsContainer = document.getElementById('fieldsContainer');
+  const addFieldBtn = document.getElementById('addFieldBtn');
+
+  addFieldBtn.addEventListener('click', () => {
+    const index = fieldsContainer.children.length;
+    const fieldDiv = document.createElement('div');
+    fieldDiv.classList.add('field-block');
+    fieldDiv.innerHTML = `
+      <hr/>
+      <label>Label:</label>
+      <input type="text" name="fields[${index}][label]" placeholder="Field Label" required>
+
+      <label>Name (unique key):</label>
+      <input type="text" name="fields[${index}][name]" placeholder="field_name" required>
+
+      <label>Type:</label>
+      <select name="fields[${index}][type]" class="field-type" required>
+        <option value="text">Text</option>
+        <option value="textarea">Textarea</option>
+        <option value="number">Number</option>
+        <option value="email">Email</option>
+        <option value="radio">Radio</option>
+        <option value="checkbox">Checkbox</option>
+        <option value="select">Dropdown</option>
+        <option value="file">File Upload</option>
+      </select>
+
+      <label>Required:</label>
+      <input type="checkbox" name="fields[${index}][required]">
+
+      <div class="options-section" style="display:none;">
+        <label>Options (comma separated):</label>
+        <input type="text" name="fields[${index}][options]" placeholder="Option1, Option2, Option3">
+      </div>
+
+      <button type="button" class="remove-btn">❌ Remove</button>
+    `;
+
+    // Show/hide options input based on type
+    const typeSelect = fieldDiv.querySelector('.field-type');
+    const optionsSection = fieldDiv.querySelector('.options-section');
+
+    typeSelect.addEventListener('change', () => {
+      if (['radio', 'checkbox', 'select'].includes(typeSelect.value)) {
+        optionsSection.style.display = 'block';
+      } else {
+        optionsSection.style.display = 'none';
+      }
+    });
+
+    // Remove field block
+    fieldDiv.querySelector('.remove-btn').addEventListener('click', () => {
+      fieldDiv.remove();
+      updateFieldIndices();
+    });
+
+    fieldsContainer.appendChild(fieldDiv);
+  });
+
+  // Renumber field indices when one is removed
+  function updateFieldIndices() {
+    [...fieldsContainer.children].forEach((div, i) => {
+      div.querySelectorAll('input, select, textarea').forEach(el => {
+        if (el.name.includes('fields[')) {
+          el.name = el.name.replace(/fields\[\d+\]/, `fields[${i}]`);
+        }
+      });
+    });
+  }
+</script>
+
+<style>
+  .form-section, .field-block {
+    background: #1e1e1e;
+    padding: 1em;
+    border-radius: 8px;
+    margin-bottom: 1em;
+  }
+
+  input, textarea, select {
+    display: block;
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #2b2b2b;
+    color: #fff;
+  }
+
+  label {
+    font-weight: 600;
+  }
+
+  .btn, .btn-primary {
+    background: #444;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: #007bff;
+  }
+
+  .remove-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  hr {
+    border: 1px solid #444;
+  }
+</style>

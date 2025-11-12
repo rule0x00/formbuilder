@@ -1,0 +1,13 @@
+<h2>🧾 Your Submission</h2>
+
+<% if (!submission) { %>
+  <p>You haven’t submitted this form yet.</p>
+<% } else { %>
+  <ul>
+    <% for (let key in submission.answers) { %>
+      <li><strong><%= key %>:</strong> <%= submission.answers[key] %></li>
+    <% } %>
+  </ul>
+<% } %>
+
+<a href="/forms" class="btn">← Back to forms</a>

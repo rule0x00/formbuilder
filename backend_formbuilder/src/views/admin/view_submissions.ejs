@@ -1,0 +1,12 @@
+<h2>📄 Submissions for <%= form.title %></h2>
+
+<% if (submissions.length === 0) { %>
+  <p>No submissions yet.</p>
+<% } else { %>
+  <% submissions.forEach(sub => { %>
+    <div class="submission">
+      <strong>User:</strong> <%= sub.userId?.name || "Unknown" %> (<%= sub.userId?.email %>)<br/>
+      <pre><%= JSON.stringify(sub.data, null, 2) %></pre>
+    </div>
+  <% }) %>
+<% } %>

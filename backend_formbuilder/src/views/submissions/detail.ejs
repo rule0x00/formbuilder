@@ -1,0 +1,27 @@
+<h2>📋 Submission by <%= submission.userId?.email || "Anonymous" %></h2>
+<p><strong>Submitted On:</strong> <%= new Date(submission.createdAt).toLocaleString() %></p>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Answer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% form.fields.forEach(field => { %>
+      <tr>
+        <td><%= field.label %></td>
+        <td>
+          <% if (Array.isArray(submission.answers[field.name])) { %>
+            <%= submission.answers[field.name].join(", ") %>
+          <% } else { %>
+            <%= submission.answers[field.name] || "—" %>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<a href="/admin/forms/<%= form._id %>/submissions" class="btn mt-3">⬅ Back to Submissions</a>

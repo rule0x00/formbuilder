@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || "FormBuilder" %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <h1 class="logo">🧩 FormBuilder</h1>
+      <nav>
+        <a href="/">Home</a>
+
+        <% if (user) { %>
+          <a href="/forms">View Forms</a>
+          <a href="/account/logout">Logout</a>
+        <% } else { %>
+          <a href="/account/login">Login</a>
+          <a href="/account/signup">Signup</a>
+        <% } %>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <%- body %>
+  </main>
+
+  <footer>
+    <p>© <%= new Date().getFullYear() %> FormBuilder</p>
+  </footer>
+</body>
+</html>

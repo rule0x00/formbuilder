@@ -1,0 +1,18 @@
+<h2>📝 <%= form.title %></h2>
+<p><%= form.description %></p>
+
+<h3>Fields</h3>
+<ul>
+  <% form.fields.forEach(field => { %>
+    <li>
+      <strong><%= field.label %></strong>
+      (<%= field.type %>)
+      <% if (field.required) { %> <span style="color: red;">*</span> <% } %>
+      <% if (field.options && field.options.length) { %>
+        <br>Options: <%= field.options.join(", ") %>
+      <% } %>
+    </li>
+  <% }) %>
+</ul>
+
+<a href="/forms" class="btn">← Back to all forms</a>
