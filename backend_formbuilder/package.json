@@ -24,19 +24,29 @@
   "homepage": "https://github.com/rule0x00/formbuilder#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-ejs-layouts": "^2.5.1",
     "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
     "mongoose": "^8.19.3",
-    "nodemon": "^3.1.10"
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.10",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "@types/express-ejs-layouts": "^2.5.4",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/method-override": "^3.0.0",
     "@types/mongoose": "^5.11.96",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.10.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
