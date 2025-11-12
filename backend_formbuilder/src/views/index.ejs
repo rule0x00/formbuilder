@@ -1,0 +1,11 @@
+<section class="text-center mt-4">
+  <h2>Welcome to <strong>FormBuilder</strong></h2>
+  <p>Create, manage, and analyze forms with ease.</p>
+
+  <div class="mt-4">
+    <a href="/forms" class="btn">View All Forms</a>
+    <% if (user && user.role === "AdminUser") { %>
+      <a href="/admin/forms/new" class="btn btn-secondary">Create a Form</a>
+    <% } %>
+  </div>
+</section>
